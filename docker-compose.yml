@@ -337,10 +337,6 @@ services:
     depends_on:
       - web
       - relay
-    networks:
-      prometheus-docker-workflow_taaghche-net:
-        aliases:
-          - sentry-nginx
   relay:
     <<: *restart_policy
     image: "$RELAY_IMAGE"
@@ -360,10 +356,6 @@ services:
         <<: *depends_on-healthy
       web:
         <<: *depends_on-healthy
-
-networks:
-  prometheus-docker-workflow_taaghche-net:
-    external: true
 
 volumes:
   sentry-data:
