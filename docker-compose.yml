@@ -326,8 +326,8 @@ services:
     command: '"0 0 * * * gosu sentry sentry cleanup --days $SENTRY_EVENT_RETENTION_DAYS"'
   nginx:
     <<: *restart_policy
-    ports:
-      - "$SENTRY_BIND:80/tcp"
+    # ports:
+    #   - "$SENTRY_BIND:80/tcp"
     image: "nginx:1.21.4-alpine"
     volumes:
       - type: bind
@@ -337,6 +337,10 @@ services:
     depends_on:
       - web
       - relay
+    networks:
+      prometheus-docker-workflow_taaghche-net:
+        aliases:
+          - sentry-nginx
   relay:
     <<: *restart_policy
     image: "$RELAY_IMAGE"
@@ -356,6 +360,11 @@ services:
         <<: *depends_on-healthy
       web:
         <<: *depends_on-healthy
+
+networks:
+  prometheus-docker-workflow_taaghche-net:
+    external: true
+
 volumes:
   sentry-data:
     external: true
