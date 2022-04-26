@@ -41,7 +41,7 @@ echo "${_endgroup}"
 echo "${_group}Starting Sentry for tests ..."
 # Disable beacon for e2e tests
 echo 'SENTRY_BEACON=False' >> $SENTRY_CONFIG_PY
-$dcr web createuser --superuser --email $TEST_USER --password $TEST_PASS || true
+echo y | $dcr web createuser --force-update --superuser --email $TEST_USER --password $TEST_PASS
 $dc up -d
 printf "Waiting for Sentry to be up"; timeout 90 bash -c 'until $(curl -Isf -o /dev/null $SENTRY_TEST_HOST); do printf '.'; sleep 0.5; done'
 echo ""
@@ -120,7 +120,11 @@ done
 echo "${_endgroup}"
 
 echo "${_group}Ensure cleanup crons are working ..."
-$dc ps | grep -q -E -e '\-cleanup\s+running\s+' -e '\-cleanup[_-].+\s+Up\s+'
+$dc ps -a | tee debug.log | grep -E -e '\-cleanup\s+running\s+' -e '\-cleanup[_-].+\s+Up\s+'
+# to debug https://github.com/getsentry/self-hosted/issues/1171
+echo '------------------------------------------'
+cat debug.log
+echo '------------------------------------------'
 echo "${_endgroup}"
 
 echo "${_group}Test custom CAs work ..."
